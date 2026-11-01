@@ -1,0 +1,13 @@
+# L1 deterministic gate (robot process, 20 Hz). Model independent.
+rate_hz: 20
+max_vx: 0.5            # m/s  forward
+max_vy: 0.3            # m/s  lateral (primitives never use vy, kept for completeness)
+max_vyaw: 0.8          # rad/s
+min_vyaw: 0.25         # rad/s  firmware ignores smaller yaw rates (prior team measurement); smaller non-zero requests are raised to this
+cmd_freshness_ms: 200  # desired command older than this -> treated as "no command" (zero velocity)
+state_freshness_ms: 300  # sportmodestate older than this -> stop
+lidar_freshness_ms: 500  # lidar sectors older than this -> no forward motion
+min_range_ahead_m: 0.45   # forward motion blocked when ahead sector min distance is below this
+min_range_side_m: 0.35   # turning blocked when the sector on the turning side is closer than this (0 disables)
+zero_hold_s: 0.3         # after a primitive ends, hold Move(0,0,0) this long instead of StopMove (keeps gait state)
+use_builtin_range_obstacle: true   # also check sportmodestate.range_obstacle[0] (front) against min_range_ahead_m

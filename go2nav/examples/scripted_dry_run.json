@@ -1,0 +1,10 @@
+[
+  [["rationale", {"where_am_i": "出発点", "goal_belief": "不明", "options": [{"action": "forward", "rejected_because": "まず周囲を見る"}], "chosen": "look_around", "why": "分岐を確認", "confidence": 0.5}],
+   ["remember", {"note": "ドライラン: 目標は廊下の突き当たり", "kind": "instruction"}],
+   ["look_around", {}]],
+  [["rationale", {"where_am_i": "廊下", "goal_belief": "前方", "options": [{"action": "left", "rejected_because": "壁"}], "chosen": "前進", "why": "開けている", "confidence": 0.6}],
+   ["go_forward_until", {"stop_on": ["opening", "blocked"], "max_m": 5}],
+   ["observe", {}]],
+  [["rationale", {"where_am_i": "廊下の途中", "goal_belief": "前方", "options": [], "chosen": "終了", "why": "ドライラン完了", "confidence": 0.9}],
+   ["stop", {"reason": "dry run finished"}]]
+]

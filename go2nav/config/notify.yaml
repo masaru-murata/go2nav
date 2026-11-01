@@ -1,0 +1,9 @@
+# notify skill: webhook targets the model may post to (it only sees the names; URLs/headers may use ${ENV} from secrets.env).
+# The skill is offered to the model only when at least one target is configured.
+targets: {}
+# targets:
+#   ops:
+#     url: ${GO2NAV_WEBHOOK_URL}          # e.g. a Slack incoming webhook or your own endpoint
+#     headers: {Authorization: "Bearer ${GO2NAV_WEBHOOK_TOKEN}"}
+#     timeout_s: 10
+# payload (JSON): {task_id, turn, t, instruction, message, target, route?, route_text?}

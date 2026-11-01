@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- go2nav: bind DDS to the robot-internal wired NIC only (never the Wi-Fi) -->
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain Id="any">
+    <General>
+      <Interfaces>
+        <NetworkInterface name="eth0" priority="default" multicast="default" />
+      </Interfaces>
+      <AllowMulticast>spdp</AllowMulticast>
+    </General>
+    <Discovery>
+      <Peers>
+        <Peer address="192.168.123.18" />
+        <Peer address="192.168.123.161" />
+      </Peers>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <MaxAutoParticipantIndex>120</MaxAutoParticipantIndex>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

@@ -1,0 +1,20 @@
+provider: openai
+model: gpt-6-astra
+reasoning_effort: max        # low | medium | high | max ; lower to high if cost is too high
+reasoning_summary: auto      # ask the API for a reasoning summary when available
+price_usd_per_1m: {input: 10.0, cached_input: 1.0, output: 50.0}
+image_long_edge_px: 768
+image_detail: high
+max_output_tokens: 6000
+keep_images_for_turns: 2     # images older than this many turns are replaced by a text summary in the session
+# Hard guard on the paid API, enforced in the client right before every call (cannot be extended with `go2nav answer continue`).
+# Any trip ends the task with status api_guard. Every call is appended to the ledger (persistent, shared by all tasks).
+guard:
+  calls_max_per_task: 60       # a task is 14-18 turns; 60 calls = something is looping
+  max_calls_per_minute: 6      # a real turn takes 10-60 s of model time; a bug loop is much faster
+  min_interval_s: 2.0
+  cost_hard_max_usd: 20.0      # per task (usage-based; conservative estimate when the API returns no usage)
+  daily_cost_max_usd: 50.0     # all tasks today, from the ledger
+  max_input_tokens_est: 150000 # request size (history growth bug)
+  max_images_in_input: 24      # images in one request; normal = up to 3 turns x 7 (look_around 6 + 1) kept in the history
+  ledger: ~/go2nav/data/api_ledger.jsonl

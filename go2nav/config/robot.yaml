@@ -1,0 +1,21 @@
+# Robot process
+http: {host: 127.0.0.1, port: 8100}
+adapter: unitree            # unitree | sim
+network_interface: eth0
+topics:
+  sport_state: rt/sportmodestate
+  low_state: rt/lf/lowstate
+  wireless: rt/wirelesscontroller
+  lidar: rt/utlidar/cloud
+camera:
+  record_fps: 10
+  segment_s: 60
+  ffmpeg: ffmpeg
+  video_codec: libx264        # Jetson: libx264 (CPU) works everywhere; h264_nvenc not available via conda ffmpeg
+  crf: 26
+state_log_hz: 10
+data_dir: ~/go2nav/data
+min_disk_free_fraction: 0.10
+obstacle_avoid_on_start: true   # try ObstaclesAvoidClient.SwitchSet(True) when --allow-motion (failure is logged, not fatal)
+sport_action_timeout_s: 20     # pose RPCs (Hello/Sit/StandDown...) block until the motion ends (Hello ~4.7 s); 3104 = client timeout
+classic_walk_on_start: true    # SportClient.ClassicWalk(True) when --allow-motion. The default learned gait ignored small velocity commands (2026-10-30); the operator's manual switch to classic walk fixed it. Return code shown in /health

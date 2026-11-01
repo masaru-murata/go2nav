@@ -1,0 +1,43 @@
+# LiDAR -> 8-sector minimum distance vocabulary (robot process, ~10 Hz)
+topic: rt/utlidar/cloud
+# Frame of rt/utlidar/cloud (measured on the robot 2026-10-29): levelled (z up, origin at FLOOR level under the head; the sensor
+# itself appears at z≈0.43 as zero-range self-hits) but its x axis is rotated about z by about -63 deg from the robot's forward
+# direction (calibrated against the camera: the door wall straight ahead had its normal at -63.4 deg in the cloud).
+# mount_rpy is applied as body = R * cloud, so yaw = +63.4 deg (1.107 rad) brings the cloud's x axis onto the body's.
+# The go2_description URDF rotation rpy=(0,2.8782,0) is NOT applicable to this topic.
+mount_rpy: [0.0, 0.0, 1.107]
+mount_xyz: [0.0, 0.0, 0.0]
+# Keep points whose height above the floor is inside this band: excludes the floor (carpet noise up to ~0.08 m) and keeps
+# everything the 0.45 m tall robot can collide with, plus table edges.
+z_min_m: 0.12
+z_max_m: 0.80
+body_box: [-0.85, 0.15, 0.45]   # own body/legs/side attachments around the head (x_min, x_max, y_half); a cluster at (0, +0.38) moves with the robot
+# The L1 produces a dense disc of spurious points on its own scan plane (tilted ~15 deg in this frame) out to ~1 m in all
+# directions (measured 2026-10-29). The plane is fitted online each window and its inliers are removed within remove_r_max_m.
+scan_plane:
+  enabled: true
+  fit_r_min_m: 0.35
+  fit_r_max_m: 0.9
+  fit_min_points: 150
+  inlier_m: 0.06
+  inlier_per_m: 0.03      # removal slab half-thickness = inlier_m + inlier_per_m * r (angular error of the fit grows with range)
+  min_inlier_frac: 0.7
+  max_tilt_deg: 35
+  remove_r_max_m: 3.0     # the disc has no sharp edge: on-plane fraction is 1.0 up to 2 m, 0.75 at 2-2.5 m, 0.2 at 3-3.5 m
+  calibrated: [0.278, 0.002, 0.391]    # fallback z = a*x + b*y + c in the BODY frame (disc pitched up ~15.5 deg toward the front); used when the online fit is not sane
+r_min_m: 0.30          # discard self-hits: zero-range returns and the head-shell halo (r 0.15-0.25 at z≈0.45, every frame)
+r_max_m: 12.0          # cap
+sector_half_width_deg: 22.5
+ahead_half_width_m: 0.4   # "ahead" = path band |y| <= this (Go2 body half-width ~0.16 m + margin); other sectors are 45 deg fans
+# vocab thresholds (planar min distance per sector)
+blocked_below_m: 1.0   # ahead/ahead_left/ahead_right below this -> blocked_XpYm ; left/right/behind* -> wall_XpYm
+near_below_m: 2.0      # [1.0, 2.0) -> near_XpYm
+open_cap_m: 8.0        # >= near_below -> open_Nm (capped at 8)
+min_points_per_sector: 3   # fewer valid points -> vocab "unknown"
+open_requires_points: 20   # claiming open_8m (no dense bin found) needs at least this many points in the sector, else "unknown"
+# robust minimum: first 0.2 m radial bin with >= min_points_per_bin points (over the accumulated frames); sparse ghost points are ignored
+bin_m: 0.2
+min_points_per_bin: 8
+kth_smallest: 3            # fallback when min_points_per_bin <= 1
+rate_hz: 10
+accumulate_s: 0.4     # frames within this window are merged (L1 non-repetitive scan: one frame covers only part of the FOV)

@@ -1,0 +1,10 @@
+# Remote-controller monitoring (robot process). Bit numbers are from docs/inventory_20261026.md (measured).
+source_topic: rt/lf/lowstate     # continuous 20 Hz source of wireless_remote bytes (rt/lowstate = 500 Hz if lower latency is needed)
+event_topic: rt/wirelesscontroller  # streams only while the operator touches the remote; used for low-latency events
+estop_buttons: [SELECT, L1]      # all must be held simultaneously (SELECT=bit3, L1=bit1)
+stick_deadzone: 0.15             # any stick axis beyond this -> operator takeover
+stick_hold_samples: 2            # consecutive samples beyond deadzone before takeover (debounce)
+lowstate_timeout_ms: 500         # no lowstate for this long -> remote_lost latch (lowstate carries the remote bytes)
+button_bits: {R1: 0, L1: 1, START: 2, SELECT: 3, R2: 4, L2: 5, F1: 6, F3: 7, A: 8, B: 9, X: 10, Y: 11, UP: 12, RIGHT: 13, DOWN: 14, LEFT: 15}
+# wireless_remote byte layout (Unitree xRockerBtnDataStruct): head[0:2], keys[2:4] LE16, lx[4:8], rx[8:12], ry[12:16], L2[16:20], ly[20:24] (float32 LE)
+stick_offsets: {lx: 4, rx: 8, ry: 12, ly: 20}

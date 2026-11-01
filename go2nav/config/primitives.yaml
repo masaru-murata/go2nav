@@ -1,0 +1,59 @@
+# Action primitives (robot process). Distances in m, angles in deg, speeds in m/s or rad/s.
+go_forward_until:
+  cruise_vx: 0.4
+  slow_vx: 0.3                # 0.2 was ignored by the firmware near obstacles (2026-10-30)
+  slow_below_ahead_m: 1.8     # ahead sector below this -> slow_vx
+  creep_vx: 0.15              # approach/zoom only: speed within creep_zone_m of the stop distance (2026-10-30: 0.3 m/s overshot 0.5 -> 0.33 m)
+  creep_zone_m: 0.5
+  blocked_ahead_m: 1.0        # stop with stopped_because=blocked
+  max_m: 15.0                 # hard cap per call (requests above are truncated)
+  timeout_s: 60.0
+  heading_hold_tol_deg: 4.0   # correct heading only beyond this error
+  heading_kp: 1.2             # rad/s per rad of error
+  opening:                    # side sector = 45 deg fan; uses the MEDIAN range of the fan (= at least half of the rays)
+    side_wall_max_m: 1.6      # side counts as "walled" while the median range is below this (corridor half-width + margin)
+    open_min_m: 2.2           # side counts as "open" once the median range exceeds this (branch >= ~1.5 m wide, >= 2.2 m deep)
+    confirm_frames: 3         # consecutive lidar frames (10 Hz) in the open state before firing
+    min_travel_m: 0.6         # ignore openings before this distance (still at the previous junction)
+    fire_without_prior_wall: false   # true = fire even if the side was never seen as a wall first (open halls)
+    center_advance_m: 0.9     # after the opening fires at its leading edge, advance this far so the robot stands in the branch mouth
+    # NOTE: open doors into deep rooms also fire. Tune on the corridor test (M1 completion criterion).
+turn:
+  bearings: {left_45: 45, left_90: 90, right_45: -45, right_90: -90, around: 180}
+  max_vyaw: 0.8
+  min_vyaw: 0.5               # 0.3 was ignored by the firmware near obstacles (2026-10-30); the gate floor is 0.25
+  kp: 1.5
+  tol_deg: 3.0
+  timeout_s: 15.0
+  settle_s: 0.3
+  stall_s: 1.0                # yaw rate below stall_rate for this long while commanding = stalled -> kick at max_vyaw
+  stall_rate: 0.05
+  stall_accept_deg: 10.0      # stalled with the error within this -> finish the turn (reported as stall_accepted_deg)
+approach:
+  vx: 0.3
+  gate_stop_tolerance_m: 0.25   # a gate stop within this of stop_m counts as reached
+  max_m: 5.0
+  default_stop_m: 0.8
+  min_stop_m: 0.5
+  timeout_s: 40.0
+look_around:
+  bearings_deg: [-90, -45, 0, 45, 90]
+  settle_s: 0.5
+  hires_center_crop: 0.5      # fraction of width kept for the hires crop of the forward image
+  image_long_edge_px: 768
+zoom:
+  max_m: 2.0
+  stop_ahead_m: 1.0
+  vx: 0.3
+  timeout_s: 25.0
+observe:
+  image_long_edge_px: 768
+  max_frame_age_ms: 300
+bearing_vocab: {ahead: 0, ahead_left: 45, left: 90, behind_left: 135, behind: 180, behind_right: -135, right: -90, ahead_right: -45}
+pose:                         # body actions. The RPC blocks until the motion ends (robot.yaml sport_action_timeout_s); settle = extra wait after it
+  settle_s: {StandDown: 1.0, StandUp: 1.0, BalanceStand: 1.0, Sit: 1.0, RiseSit: 1.0, Hello: 0.5, Stretch: 0.5, RecoveryStand: 1.0}
+stall:                        # forward drives: no progress while commanding -> kick, then give up with stopped_because=stalled
+  forward_stall_s: 1.5
+  forward_stall_speed: 0.03   # m/s
+  kick_vx: 0.35
+  forward_give_up_s: 4.0      # total stalled time before the drive ends (was a 40-60 s timeout)

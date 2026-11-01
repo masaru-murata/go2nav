@@ -1,0 +1,13 @@
+turns_max: 40
+elapsed_max_s: 1200
+distance_max_m: 300
+cost_max_usd: 10.0
+model_timeout_s: 90       # one model call
+model_retry_wait_s: 5     # one retry per turn, transient errors (timeout/connection/429/5xx) only
+model_silence_action: wait  # on timeout: finish the current action, discard the rest, wait in place (never Damp)
+max_actions_per_batch: 3
+same_batch_repeat_limit: 3   # identical batch 3 turns in a row -> rejected (L2)
+same_place_visits_before_ask: 3
+report_requires_verify: true    # report(done) needs recent evidence: a verify (then the LiDAR check below) or a successful effect skill (pose/notify)
+report_evidence_turns: 2        # "recent" = within this many turns
+report_max_ahead_range_m: 2.0   # after a verify, report(done) is accepted only if something is within this range ahead (LiDAR cross-check)

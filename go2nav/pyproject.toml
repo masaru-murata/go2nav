@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "go2nav"
+version = "0.1.0"
+description = "Zero-shot facility navigation for Unitree Go2 with a frontier model (robot process + brain process)"
+requires-python = ">=3.10"
+dependencies = []   # provided by conda environment.yml (numpy, opencv, pyyaml, fastapi, uvicorn, httpx, pydantic, openai)
+
+[project.scripts]
+go2nav = "go2nav.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["go2nav*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

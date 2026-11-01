@@ -1,0 +1,19 @@
+name: go2nav
+channels: [conda-forge]
+dependencies:
+  - python=3.10
+  - cmake
+  - compilers
+  - numpy
+  - opencv
+  - pyyaml
+  - fastapi
+  - uvicorn
+  - httpx
+  - pydantic
+  - msgpack-python
+  - ffmpeg
+  - pytest
+  - pip
+  - pip:
+      - openai
